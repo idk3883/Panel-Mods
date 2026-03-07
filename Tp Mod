@@ -1,0 +1,60 @@
+(function()
+local a=game.Players.LocalPlayer
+local b=task.wait
+local c=a:WaitForChild("PlayerGui")
+local d=Instance.new("ScreenGui")
+d.ResetOnSpawn=false
+d.Parent=c
+
+local e=Instance.new("Frame")
+e.Size=UDim2.new(0,210,0,95)
+e.Position=UDim2.new(0.5,-105,0.7,0)
+e.BackgroundColor3=Color3.fromRGB(0,0,0)
+e.Active=true
+e.Draggable=true
+e.Parent=d
+Instance.new("UICorner",e)
+local f=Instance.new("UIStroke")
+f.Color=Color3.fromRGB(255,255,255)
+f.Thickness=2
+f.Parent=e
+
+local g=Instance.new("TextLabel")
+g.Size=UDim2.new(1,0,0,30)
+g.BackgroundTransparency=1
+g.Text="Mods Panel Tp🔥"
+g.TextColor3=Color3.fromRGB(255,255,255)
+g.Font=Enum.Font.FredokaOne
+g.TextSize=18
+g.Parent=e
+
+local h=Instance.new("Frame")
+h.Size=UDim2.new(0.82,0,0,42)
+h.Position=UDim2.new(0.09,0,0.48,0) -- moved up from 0.55
+h.BackgroundColor3=Color3.fromRGB(255,255,255)
+h.Parent=e
+Instance.new("UICorner",h)
+
+local i=Instance.new("TextButton")
+i.Size=UDim2.new(1,-4,1,-4)
+i.Position=UDim2.new(0,2,0,2)
+i.BackgroundColor3=Color3.fromRGB(0,0,0)
+i.Text="Teleport⚡️"
+i.TextColor3=Color3.fromRGB(255,255,255)
+i.Font=Enum.Font.FredokaOne
+i.TextSize=20
+i.Parent=h
+Instance.new("UICorner",i)
+
+local j={CFrame.new(-350.73,-7.00,51.48),CFrame.new(-356.93,-7.00,26.22),CFrame.new(-331.57,-4.79,19.51)}
+local k=0.035
+
+i.MouseButton1Click:Connect(function()
+	local l=a.Character or a.CharacterAdded:Wait()
+	local m=l:WaitForChild("HumanoidRootPart")
+	for n=1,#j do
+		m.CFrame=j[n]
+		b(k)
+	end
+end)
+end)()
