@@ -1,4 +1,4 @@
-(function()
+function()
 local a=game.Players.LocalPlayer
 local b=task.wait
 local c=a:WaitForChild("PlayerGui")
