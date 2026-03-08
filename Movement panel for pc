@@ -1,0 +1,85 @@
+-- PC ONLY MOVEMENT PANEL
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local humanoid = char:WaitForChild("Humanoid")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "MovementPanel"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,220,0,150)
+frame.Position = UDim2.new(0.5,-110,0.5,-75)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundTransparency = 1
+title.Text = "Movement Panel"
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+
+-- SPEED BOX
+local speedBox = Instance.new("TextBox")
+speedBox.Parent = frame
+speedBox.Size = UDim2.new(0.8,0,0,30)
+speedBox.Position = UDim2.new(0.1,0,0.3,0)
+speedBox.PlaceholderText = "Enter Speed"
+speedBox.Text = ""
+speedBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+speedBox.TextColor3 = Color3.new(1,1,1)
+speedBox.Font = Enum.Font.Gotham
+speedBox.TextScaled = true
+
+local setSpeed = Instance.new("TextButton")
+setSpeed.Parent = frame
+setSpeed.Size = UDim2.new(0.8,0,0,30)
+setSpeed.Position = UDim2.new(0.1,0,0.55,0)
+setSpeed.Text = "Set Speed"
+setSpeed.BackgroundColor3 = Color3.fromRGB(60,60,60)
+setSpeed.TextColor3 = Color3.new(1,1,1)
+setSpeed.Font = Enum.Font.GothamBold
+setSpeed.TextScaled = true
+
+setSpeed.MouseButton1Click:Connect(function()
+	local num = tonumber(speedBox.Text)
+	if num then
+		humanoid.WalkSpeed = num
+	end
+end)
+
+-- INF JUMP
+local infJump = false
+
+local infButton = Instance.new("TextButton")
+infButton.Parent = frame
+infButton.Size = UDim2.new(0.8,0,0,30)
+infButton.Position = UDim2.new(0.1,0,0.78,0)
+infButton.Text = "Infinite Jump: OFF"
+infButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+infButton.TextColor3 = Color3.new(1,1,1)
+infButton.Font = Enum.Font.GothamBold
+infButton.TextScaled = true
+
+infButton.MouseButton1Click:Connect(function()
+	infJump = not infJump
+	infButton.Text = "Infinite Jump: "..(infJump and "ON" or "OFF")
+end)
+
+UIS.JumpRequest:Connect(function()
+	if infJump then
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
