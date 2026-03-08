@@ -1,0 +1,103 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "MovementPanel"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,240,0,150)
+frame.Position = UDim2.new(0.5,-120,0.6,0)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+Instance.new("UICorner",frame)
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(255,255,255)
+stroke.Thickness = 2
+stroke.Parent = frame
+
+-- TITLE
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundTransparency = 1
+title.Text = "Movement Panel"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 18
+title.Parent = frame
+
+-- SPEED SECTION
+local speedFrame = Instance.new("Frame")
+speedFrame.Size = UDim2.new(0.8,0,0,35)
+speedFrame.Position = UDim2.new(0.1,0,0.3,0)
+speedFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
+speedFrame.Parent = frame
+Instance.new("UICorner",speedFrame)
+
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(0.45,-4,1,-4)
+speedBox.Position = UDim2.new(0,2,0,2)
+speedBox.BackgroundColor3 = Color3.fromRGB(0,0,0)
+speedBox.PlaceholderText = "Speed"
+speedBox.TextColor3 = Color3.fromRGB(255,255,255)
+speedBox.Font = Enum.Font.GothamBlack
+speedBox.TextSize = 16
+speedBox.Parent = speedFrame
+Instance.new("UICorner",speedBox)
+
+local speedButton = Instance.new("TextButton")
+speedButton.Size = UDim2.new(0.55,-4,1,-4)
+speedButton.Position = UDim2.new(0.45,2,0,2)
+speedButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
+speedButton.Text = "Set Speed"
+speedButton.TextColor3 = Color3.fromRGB(255,255,255)
+speedButton.Font = Enum.Font.GothamBlack
+speedButton.TextSize = 16
+speedButton.Parent = speedFrame
+Instance.new("UICorner",speedButton)
+
+speedButton.MouseButton1Click:Connect(function()
+	local num = tonumber(speedBox.Text)
+	if num and player.Character then
+		player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = num
+	end
+end)
+
+-- INFINITE JUMP
+local jumpFrame = Instance.new("Frame")
+jumpFrame.Size = UDim2.new(0.8,0,0,35)
+jumpFrame.Position = UDim2.new(0.1,0,0.6,0)
+jumpFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
+jumpFrame.Parent = frame
+Instance.new("UICorner",jumpFrame)
+
+local jumpButton = Instance.new("TextButton")
+jumpButton.Size = UDim2.new(1,-4,1,-4)
+jumpButton.Position = UDim2.new(0,2,0,2)
+jumpButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
+jumpButton.Text = "Infinite Jump: OFF"
+jumpButton.TextColor3 = Color3.fromRGB(255,255,255)
+jumpButton.Font = Enum.Font.GothamBlack
+jumpButton.TextSize = 16
+jumpButton.Parent = jumpFrame
+Instance.new("UICorner",jumpButton)
+
+local infiniteJump = false
+
+jumpButton.MouseButton1Click:Connect(function()
+	infiniteJump = not infiniteJump
+	jumpButton.Text = "Infinite Jump: "..(infiniteJump and "ON" or "OFF")
+end)
+
+UIS.JumpRequest:Connect(function()
+	if infiniteJump and player.Character then
+		player.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
