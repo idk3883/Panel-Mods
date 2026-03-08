@@ -1,0 +1,150 @@
+(function()
+
+local a=game.Players.LocalPlayer
+local b=task.wait
+local tcs=game:GetService("TextChatService")
+
+local c={
+CFrame.new(-352.66,-7.00,64.28),
+CFrame.new(-363.28,-7.00,12.49),
+CFrame.new(-331.34,-4.79,19.14)
+}
+
+local d=0.05
+local ap=false
+
+local e=Instance.new("ScreenGui")
+e.ResetOnSpawn=false
+e.Parent=a:WaitForChild("PlayerGui")
+
+local f=Instance.new("Frame")
+f.Size=UDim2.new(0,210,0,140)
+f.Position=UDim2.new(0.5,-105,0.7,0)
+f.BackgroundColor3=Color3.fromRGB(0,0,0)
+f.Active=true
+f.Draggable=true
+f.Parent=e
+
+Instance.new("UICorner",f)
+
+local g=Instance.new("UIStroke")
+g.Color=Color3.fromRGB(255,255,255)
+g.Thickness=2
+g.Parent=f
+
+local h=Instance.new("TextLabel")
+h.Size=UDim2.new(1,0,0,30)
+h.BackgroundTransparency=1
+h.Text="Tp + Block panel🔥"
+h.TextColor3=Color3.fromRGB(255,255,255)
+h.Font=Enum.Font.FredokaOne
+h.TextSize=18
+h.Parent=f
+
+local i=Instance.new("Frame")
+i.Size=UDim2.new(0.82,0,0,42)
+i.Position=UDim2.new(0.09,0,0.35,0)
+i.BackgroundColor3=Color3.fromRGB(255,255,255)
+i.Parent=f
+Instance.new("UICorner",i)
+
+local j=Instance.new("TextButton")
+j.Size=UDim2.new(1,-4,1,-4)
+j.Position=UDim2.new(0,2,0,2)
+j.BackgroundColor3=Color3.fromRGB(0,0,0)
+j.Text="Steal😈"
+j.TextColor3=Color3.fromRGB(255,255,255)
+j.Font=Enum.Font.FredokaOne
+j.TextSize=20
+j.Parent=i
+Instance.new("UICorner",j)
+
+-- AP BUTTON
+
+local apFrame=Instance.new("Frame")
+apFrame.Size=UDim2.new(0.82,0,0,32)
+apFrame.Position=UDim2.new(0.09,0,0.72,0)
+apFrame.BackgroundColor3=Color3.fromRGB(255,255,255)
+apFrame.Parent=f
+Instance.new("UICorner",apFrame)
+
+local apBtn=Instance.new("TextButton")
+apBtn.Size=UDim2.new(1,-4,1,-4)
+apBtn.Position=UDim2.new(0,2,0,2)
+apBtn.BackgroundColor3=Color3.fromRGB(0,0,0)
+apBtn.Text="Ap on teleport🚀: OFF"
+apBtn.TextColor3=Color3.fromRGB(255,255,255)
+apBtn.Font=Enum.Font.FredokaOne
+apBtn.TextSize=16
+apBtn.Parent=apFrame
+Instance.new("UICorner",apBtn)
+
+apBtn.MouseButton1Click:Connect(function()
+ap=not ap
+if ap then
+apBtn.Text="Ap on teleport🚀: ON"
+else
+apBtn.Text="Ap on teleport🚀: OFF"
+end
+end)
+
+local function k()
+local l=a.Backpack
+local m=a.Character
+
+for _,n in pairs(l:GetChildren()) do
+if n:IsA("Tool") and (n.Name=="Magic Carpet" or n.Name=="Flying Carpet") then
+n.Parent=m
+return
+end
+end
+end
+
+local function rocket()
+for _,p in pairs(game.Players:GetPlayers()) do
+if p~=a then
+local msg=";rocket "..p.Name
+pcall(function()
+if tcs.ChatVersion==Enum.ChatVersion.TextChatService then
+tcs.TextChannels.RBXGeneral:SendAsync(msg)
+else
+game:GetService("ReplicatedStorage")
+.DefaultChatSystemChatEvents
+.SayMessageRequest:FireServer(msg,"All")
+end
+end)
+end
+end
+end
+
+local function o()
+for _,p in pairs(game.Players:GetPlayers()) do
+if p~=a then
+pcall(function()
+game:GetService("StarterGui"):SetCore("PromptBlockPlayer",p)
+end)
+end
+end
+end
+
+j.MouseButton1Click:Connect(function()
+
+k()
+
+local q=a.Character or a.CharacterAdded:Wait()
+local r=q:WaitForChild("HumanoidRootPart")
+
+for s=1,#c do
+r.CFrame=c[s]
+b(d)
+end
+
+if ap then
+rocket()
+end
+
+o()
+
+end)
+
+end)()
